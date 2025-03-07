@@ -121,6 +121,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 0.5rem;
+	    margin-bottom: 2rem;
             transition: background-color 0.3s ease;
         }
         .add-dependency-btn:hover {
@@ -138,8 +139,8 @@
             color: #e8eaf6;
             border: none;
             border-radius: 4px;
+	    padding: 0.5rem 2rem;
             cursor: pointer;
-            padding: 0.3rem 0.4rem;
             transition: background-color 0.3s ease;
         }
         .remove-dependency-btn:hover {
@@ -234,11 +235,12 @@
           <div id="dependencies-container">
           </div>
           <button type="button" id="add-dependency" class="add-dependency-btn">+</button>
-        </div>
 
         <div class="form-group">
             <label for="install_dependencies_command">Install Dependencies Command:</label>
             <input type="text" id="install_dependencies_command" disabled> </div>
+        </div>
+
 
         <div class="form-group">
             <label for="port">Port:</label>
