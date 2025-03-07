@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
     <style>
         body {
             font-family: sans-serif;
-            background-color: #121212; /* Dark background */
-            color: #b39ddb; /* Light Purple Text */
+            background-color: #121212;
+            color: #b39ddb;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,7 +19,7 @@
         }
 
         .container {
-            background-color: #1c1c27; /* Slightly lighter dark container */
+            background-color: #1c1c27;
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -33,7 +34,7 @@
         label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #9575cd; /* Darker Purple for Labels */
+            color: #9575cd;
         }
 
         input[type="text"],
@@ -42,8 +43,8 @@
             width: 100%;
             padding: 0.5rem;
             border-radius: 4px;
-            border: 1px solid #37374a; /* Darker Border */
-            background-color: #28283a; /* Dark Input Background */
+            border: 1px solid #37374a;
+            background-color: #28283a;
             color: #b39ddb;
             box-sizing: border-box;
         }
@@ -52,10 +53,69 @@
             resize: vertical;
             min-height: 100px;
         }
+      /* Styles for the custom checkbox (toggle switch) */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #37374a; /* Same as other input borders */
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius: 34px; /* Rounded slider */
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: #b39ddb; /* Knob color */
+        -webkit-transition: .4s;
+        transition: .4s;
+        border-radius: 50%; /* Round knob */
+      }
+
+      input:checked + .slider {
+        background-color: #3949ab; /* Dark Blue (same as generate button) */
+      }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #3949ab;
+    }
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      /* --- End custom checkbox styles --- */
+        .checkbox-container {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
 
         .add-dependency-btn {
-            background-color: #4a148c; /* Dark Purple */
-            color: #ede7f6; /* Very Light Purple */
+            background-color: #4a148c;
+            color: #ede7f6;
             padding: 0.5rem 1rem;
             border: none;
             border-radius: 4px;
@@ -63,9 +123,8 @@
             margin-top: 0.5rem;
             transition: background-color 0.3s ease;
         }
-
         .add-dependency-btn:hover {
-            background-color: #6a1b9a; /* Slightly lighter purple on hover */
+            background-color: #6a1b9a;
         }
 
         .dependency-input-group {
@@ -75,21 +134,20 @@
         }
 
         .remove-dependency-btn {
-            background-color: #303f9f; /* Dark Indigo */
-            color: #e8eaf6; /* Light Indigo */
+            background-color: #303f9f;
+            color: #e8eaf6;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             padding: 0.3rem 0.4rem;
             transition: background-color 0.3s ease;
         }
-
         .remove-dependency-btn:hover {
-            background-color: #3f51b5; /* Slightly lighter indigo on hover */
+            background-color: #3f51b5;
         }
 
         .generate-btn {
-            background-color: #3949ab; /* Dark Blue */
+            background-color: #3949ab;
             color: #e8eaf6;
             padding: 0.75rem 1.5rem;
             border: none;
@@ -100,9 +158,8 @@
             margin-top: 1rem;
             transition: background-color 0.3s ease;
         }
-
         .generate-btn:hover {
-            background-color: #5c6bc0; /* Slightly lighter blue on hover */
+            background-color: #5c6bc0;
         }
 
         .output-block {
@@ -112,11 +169,14 @@
             margin-top: 1rem;
             overflow-x: auto;
             position: relative;
+
         }
 
-        .output-block pre {
-            margin: 0;
-        }
+        .output-block pre code {
+          display: block;
+          padding: 0.5em;
+
+      }
 
         .copy-btn {
             position: absolute;
@@ -131,10 +191,9 @@
             font-size: 0.8rem;
             transition: background-color 0.3s ease;
         }
-
-        .copy-btn:hover {
-            background-color: #6a1b9a;
-        }
+      .copy-btn:hover{
+        background-color: #6a1b9a;
+      }
 
     </style>
 </head>
@@ -162,22 +221,24 @@
             <textarea id="description"></textarea>
         </div>
 
-        <div class="form-group">
-            <label for="additional_dependencies">Additional Dependencies:</label>
-            <div id="dependencies-container">
-                </div>
-            <button type="button" id="add-dependency" class="add-dependency-btn">+</button>
+        <div class="form-group checkbox-container">
+            <label for="has_additional_dependencies">Has Additional Dependencies:</label>
+            <label class="switch">
+              <input type="checkbox" id="has_additional_dependencies">
+              <span class="slider"></span>
+            </label>
         </div>
 
-        <div class="form-group">
-            <label for="has_additional_dependencies">Has Additional Dependencies:</label>
-            <input type="text" id="has_additional_dependencies">
+       <div class="form-group" id="additional-deps-section">
+          <label for="additional_dependencies">Additional Dependencies:</label>
+          <div id="dependencies-container">
+          </div>
+          <button type="button" id="add-dependency" class="add-dependency-btn">+</button>
         </div>
 
         <div class="form-group">
             <label for="install_dependencies_command">Install Dependencies Command:</label>
-            <input type="text" id="install_dependencies_command">
-        </div>
+            <input type="text" id="install_dependencies_command" disabled> </div>
 
         <div class="form-group">
             <label for="port">Port:</label>
@@ -197,20 +258,108 @@
         <button type="button" id="generate" class="generate-btn">Generate JSON</button>
 
         <div class="output-block" id="output" style="display: none;">
-            <pre><code id="json-output"></code></pre>
+           <pre><code id="json-output" class="language-json"></code></pre>
             <button class="copy-btn" id="copy-button">Copy</button>
         </div>
     </div>
 
-    <script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+     <script>
         const generateBtn = document.getElementById('generate');
         const outputDiv = document.getElementById('output');
         const jsonOutput = document.getElementById('json-output');
         const addDependencyBtn = document.getElementById('add-dependency');
         const dependenciesContainer = document.getElementById('dependencies-container');
         const copyButton = document.getElementById("copy-button");
+        const hasAdditionalDependenciesCheckbox = document.getElementById('has_additional_dependencies');
+        const installDependenciesCommandInput = document.getElementById('install_dependencies_command');
+        const additionalDepsSection = document.getElementById('additional-deps-section');
 
-        // Function to create a dependency input group
-        function createDependencyInputGroup() {
-            const dependencyInputGroup = document.createElement('div');
-            dependencyInputGroup.className = 'dependency-input-group';
+      // Function to create a dependency input group
+      function createDependencyInputGroup() {
+          const dependencyInputGroup = document.createElement('div');
+          dependencyInputGroup.className = 'dependency-input-group';
+
+          const dependencyInput = document.createElement('input');
+          dependencyInput.type = 'text';
+          dependencyInput.className = 'dependency-input';
+          dependencyInput.placeholder = 'Dependency name';
+
+          const removeButton = document.createElement('button');
+          removeButton.type = 'button';
+          removeButton.className = 'remove-dependency-btn';
+          removeButton.textContent = '-';
+          removeButton.addEventListener('click', () => {
+              dependencyInputGroup.remove();
+          });
+
+          dependencyInputGroup.appendChild(dependencyInput);
+          dependencyInputGroup.appendChild(removeButton);
+          return dependencyInputGroup;
+      }
+
+        // Event listener for checkbox
+      hasAdditionalDependenciesCheckbox.addEventListener('change', () => {
+            if (hasAdditionalDependenciesCheckbox.checked) {
+                installDependenciesCommandInput.disabled = false;
+                additionalDepsSection.style.display = "block";
+            } else {
+                installDependenciesCommandInput.disabled = true;
+                installDependenciesCommandInput.value = ""; // Clear the input
+                additionalDepsSection.style.display = "none"; // Hide the whole section
+            }
+        });
+
+        // Initially hide the additional dependencies section and add button
+        additionalDepsSection.style.display = "none";
+
+      addDependencyBtn.addEventListener('click', () => {
+        dependenciesContainer.appendChild(createDependencyInputGroup());
+      });
+
+        generateBtn.addEventListener('click', () => {
+            const commentary = document.getElementById('commentary').value;
+            const template = document.getElementById('template').value;
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const dependencyInputs = Array.from(document.querySelectorAll('.dependency-input'));
+            const additionalDependencies = dependencyInputs.map(input => input.value).filter(dep => dep !== "");
+            const hasAdditionalDependencies = hasAdditionalDependenciesCheckbox.checked;
+            const installDependenciesCommand = installDependenciesCommandInput.value;
+            const port = parseFloat(document.getElementById('port').value);
+            const filePath = document.getElementById('file_path').value;
+            const code = document.getElementById('code').value;
+
+            const json = {
+                commentary: commentary,
+                template: template,
+                title: title,
+                description: description,
+                additional_dependencies: additionalDependencies,
+                has_additional_dependencies: hasAdditionalDependencies,
+                install_dependencies_command: installDependenciesCommand,
+                port: port,
+                file_path: filePath,
+                code: code
+            };
+
+            const jsonString = JSON.stringify(json, null, 2);
+            jsonOutput.textContent = jsonString;
+            hljs.highlightElement(jsonOutput);
+            outputDiv.style.display = 'block';
+        });
+
+        copyButton.addEventListener("click", () => {
+            const textToCopy = jsonOutput.textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyButton.textContent = "Copied!";
+                setTimeout(() => {
+                    copyButton.textContent = "Copy";
+                }, 2000);
+            }).catch((err) => {
+                console.error("Failed to copy text:", err);
+            });
+        });
+    </script>
+</body>
+</html>
